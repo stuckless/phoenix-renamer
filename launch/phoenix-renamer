@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export EXEDIR=`dirname $0`
+java -DMainClass=sagex.phoenix.standalone.PhoenixRenamer -jar "$EXEDIR/phoenix-tools.jar" "$@"

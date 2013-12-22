@@ -1,0 +1,38 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>phoenix-tools.jar</jar>
+  <outfile>../target/phoenix-renamer.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon></icon>
+  <jre>
+    <path></path>
+    <minVersion>1.5.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+    <opt>-DMainClass=sagex.phoenix.standalone.PhoenixRenamer</opt>
+    <opt>-Dlaunch4j.exedir=&quot;%EXEDIR%&quot;</opt>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0.0-beta</txtFileVersion>
+    <fileDescription>Phoenix Renamer</fileDescription>
+    <copyright>Sean Stuckless / Phoenix</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0.0-beta</txtProductVersion>
+    <productName>Phoenix Commandline Renamer</productName>
+    <companyName>Phoenix</companyName>
+    <internalName>Phoenix Renamer</internalName>
+    <originalFilename>phoenix-renamer.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>
