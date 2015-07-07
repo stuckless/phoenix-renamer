@@ -112,7 +112,7 @@ public class TestRenamer {
 		File f7 = makeFile(downloads, "Revenge S01E03 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E03.Trust.720p.WEB-DL.DD5.1.H.264-TB.mkv.srt");
 		File f8 = makeFile(downloads, "Revenge S01E03 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E03.Trust.720p.WEB-DL.DD5.1.H.264-TB.nfo");
 		
-		PhoenixRenamer.main(new String[] {"--renameDirectories", "--renameArtifacts", downloads.getAbsolutePath()});
+		PhoenixRenamer.main(new String[]{"--renameDirectories", "--renameArtifacts", downloads.getAbsolutePath()});
 		
 		assertTrue(new File(downloads, "Revenge/Revenge - S01E02 - Trust.mkv").exists());
 		assertTrue(new File(downloads, "Revenge/Revenge - S01E02 - Trust.mkv.properties").exists());
@@ -140,7 +140,7 @@ public class TestRenamer {
 		File f7 = makeFile(downloads, "Paranormal Activity 3 2011 UNRATED BluRay 1080p DTS x264 CHD/paranormal.activity.3.2011.bluray.1080p.dts.x264.sample-chd.mkv");
 		File f8 = makeFile(downloads, "Paranormal Activity 3 2011 UNRATED BluRay 1080p DTS x264 CHD/paranormal.activity.3.2011.bluray.1080p.dts.x264.sample-chd.mkv.properties");
 		
-		PhoenixRenamer.main(new String[] {"--renameDirectories", "--renameArtifacts", downloads.getAbsolutePath()});
+		PhoenixRenamer.main(new String[]{"--renameDirectories", "--renameArtifacts", downloads.getAbsolutePath()});
 		
 		assertTrue(new File(downloads, "Salt (2010)/Salt (2010).mkv").exists());
 		assertTrue(new File(downloads, "Salt (2010)/Salt (2010).mkv.properties").exists());
@@ -252,5 +252,27 @@ public class TestRenamer {
 
 		assertTrue(new File(downloads, "Hugo (2011)/Hugo (2011).mkv").exists());
 	}
+
+	@Test
+	public void testRenameMaskWithDir() throws Exception {
+		File downloads = new File("target/junit/downloads");
+		FileUtils.deleteDirectory(downloads);
+
+		File f1 = makeFile(downloads, "Hugo.mkv");
+		PhoenixRenamer.main(new String[] {"--movieMask","MOVIES/mv/${MediaTitle} (${Year})","--loglevel", "info", downloads.getAbsolutePath()});
+
+        assertTrue(new File(downloads, "MOVIES/mv/Hugo (2011).mkv").exists());
+	}
+
+    @Test
+    public void testRenameWithDifferentOutDir() throws Exception {
+        File downloads = new File("target/junit/downloads");
+        FileUtils.deleteDirectory(downloads);
+
+        File f1 = makeFile(downloads, "Hugo.mkv");
+        PhoenixRenamer.main(new String[] {"--movieOutDir", new File(downloads,"movies/new/").getAbsolutePath(),"--loglevel", "info", downloads.getAbsolutePath()});
+
+        assertTrue(new File(downloads, "movies/new/Hugo (2011).mkv").exists());
+    }
 
 }

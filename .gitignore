@@ -6,6 +6,8 @@ logs/
 NoCommit/
 libs/
 classes/
+.idea/
+.settings/
 
 # Compiled source #
 ###################

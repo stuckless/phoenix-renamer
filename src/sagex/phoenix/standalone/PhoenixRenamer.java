@@ -3,6 +3,7 @@ package sagex.phoenix.standalone;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,18 @@ public class PhoenixRenamer extends PhoenixStandalone {
 
 	private String postExecuteCommand = null;
 	private String postExecuteCommandArgs = null;
+
+	private String renameFailedCommand;
 	
+    private File tvOutDir=null;
+    private File movieOutDir=null;
+
+    // if true, then if the rename fails for a title, it will try the dirname as the title.
+    public boolean dirNameAsTitle=true;
+    
+    File watchDir=null;
+    int watchSeconds=60;
+    
 	/**
 	 * {@value}
 	 */
@@ -87,7 +99,14 @@ public class PhoenixRenamer extends PhoenixStandalone {
 		options.addOption("t", "tvMask", true, "TV Rename mask.  ie, something like '"+DEFAULT_TV_MASK+"'");
 		options.addOption("m", "movieMask", true, "Movie Rename mask.  ie, something like '"+DEFAULT_MOVIE_MASK+"'");
 		options.addOption("c", "cmd", true, "Execute this command when the rename is complete.  The only parameter passed to the command will be the new filename to which the content was renamed.  The ENVIRONMENT will contain all the metadata properties prefixed by PHOENIX_, e.g., MediaTitle will be PHOENIX_MEDIATITLE.  Please note the command must be a fully qualified path to the command being executed.");
+		options.addOption("f", "cmd-failed", true, "Execute this command when the rename fails. Param 1 will be the filename, Param 2 will be a message. Please note the command must be a fully qualified path to the command being executed.");
 		options.addOption(null, "cmd-args", true, "These args gets passed as the second arg to the --cmd");
+        options.addOption(null, "movieOutDir", true, "Movie destination dir (defaults to same dir as movie file)");
+        options.addOption(null, "tvOutDir", true, "TV destination dir (defaults to same dir as movie file)");
+        options.addOption(null, "watchDir", true, "Watch this dir for new media files, and rename when they arrive");
+        options.addOption(null, "watchSeconds", true, "As files are being watched, ONLY process the file if no changes have happened to the file within this amount of seconds");
+        options.addOption(null, "no-dirname-lookups", false, "If passed, then it not attempt to use the DIRNAME as the Media Title when the lookup fails for a Media Item");
+
 		CommandLineParser parser = new GnuParser();
 		try {
 			CommandLine cl = parser.parse(options, args);
@@ -97,20 +116,53 @@ public class PhoenixRenamer extends PhoenixStandalone {
 				return;
 			}
 
-			if (cl.getArgList().size() == 0) {
-				printHelp(options, null);
-				return;
+			// if we are watching, then no extra args
+			if (cl.hasOption("watchDir")) {
+				if (cl.getArgList().size() > 0) {
+					printHelp(options, null);
+					return;
+				}
 			} else {
-				for (Object s : cl.getArgList()) {
-					if (s instanceof File) {
-						renamer.files.add((File) s);
-					} else if (s instanceof String) {
-						renamer.files.add(new File((String) s));
+				// no watching, so validate extra aargs
+				if (cl.getArgList().size() == 0) {
+					printHelp(options, null);
+					return;
+				} else {
+					for (Object s : cl.getArgList()) {
+						if (s instanceof File) {
+							renamer.files.add((File) s);
+						} else if (s instanceof String) {
+							renamer.files.add(new File((String) s));
+						}
 					}
 				}
 			}
 
-			if (cl.hasOption("renameDirectories")) {
+            if (cl.hasOption("no-dirname-lookups")) {
+                renamer.dirNameAsTitle=false;
+            }
+            
+            if (cl.hasOption("tvOutDir")) {
+                renamer.tvOutDir = new File(cl.getOptionValue("tvOutDir"));
+            }
+
+            if (cl.hasOption("movieOutDir")) {
+                renamer.movieOutDir = new File(cl.getOptionValue("movieOutDir"));
+            }
+            
+            if (cl.hasOption("watchDir")) {
+                renamer.watchDir = new File(cl.getOptionValue("watchDir"));
+                if (!renamer.watchDir.exists() || !renamer.watchDir.isDirectory()) {
+                	System.out.println("Watch Dir: " + renamer.watchDir.getAbsolutePath() + " does not exist, or is not a directory.");
+                	System.exit(1);
+                }
+            }
+            
+            if (cl.hasOption("watchSeconds")) {
+                renamer.watchSeconds = Integer.parseInt(cl.getOptionValue("watchSeconds"));
+            }
+
+            if (cl.hasOption("renameDirectories")) {
 				renamer.renameDirectories = true;
 			}
 
@@ -128,6 +180,9 @@ public class PhoenixRenamer extends PhoenixStandalone {
 
 			if (cl.hasOption("c")) {
 				renamer.postExecuteCommand = cl.getOptionValue("c");
+			}
+			if (cl.hasOption("f")) {
+				renamer.renameFailedCommand = cl.getOptionValue("f");
 			}
 
 			if (cl.hasOption("cmd-args")) {
@@ -153,14 +208,23 @@ public class PhoenixRenamer extends PhoenixStandalone {
 	}
 
 	private void run() {
-		for (File f : files) {
-			if (!f.exists()) {
-				log.debug("Invalid file: " + f);
-				continue;
+		if (watchDir!=null) {
+			log.info("Watching DIR " + watchDir  + " for newly added files to rename");
+			try {
+				new WatchDir(Paths.get(watchDir.toURI()), true).processEvents(new WatchedFile(this));
+			} catch (IOException e) {
+				log.error("Failed to watch dir " + watchDir, e);
+			};
+		} else {		
+			for (File f : files) {
+				if (!f.exists()) {
+					log.debug("Invalid file: " + f);
+					continue;
+				}
+	
+				IMediaResource res = FileResourceFactory.createResource(f);
+				processResource(res);
 			}
-
-			IMediaResource res = FileResourceFactory.createResource(f);
-			processResource(res);
 		}
 	}
 
@@ -174,6 +238,12 @@ public class PhoenixRenamer extends PhoenixStandalone {
 		}
 	}
 
+	public boolean accepts(File file) {
+		return FileResourceFactory.isVideoFile(file)
+				|| FileResourceFactory.isBluRay(file)
+				|| FileResourceFactory.isDVD(file);
+	}
+	
 	public void processMediaFile(IMediaFile res) {
 
 		File file = PathUtils.getFirstFile(res);
@@ -194,17 +264,21 @@ public class PhoenixRenamer extends PhoenixStandalone {
 				try {
 					results = mm.search(q);
 					md = mm.getMetdata(results, q);
-				} catch (Exception e) {
-					if (md == null) {
-						FileMediaFile fmf = (FileMediaFile) FileResourceFactory.createResource(PathUtils.getFirstFile(res));
-						log.debug("Attempting to use folder name as the file name for " + fmf.getTitle());
-						fmf.getFiles().clear();
-						fmf.addFile(PathUtils.getFirstFile(res).getParentFile());
-						
-						q = qf.createQueryFromFilename(fmf, hints);
-						mm = Phoenix.getInstance().getMetadataManager();
-						results = mm.search(q);
-						md = mm.getMetdata(results, q);
+				} catch (Exception e) {					
+					if (dirNameAsTitle) {
+						if (md == null) {
+							FileMediaFile fmf = (FileMediaFile) FileResourceFactory.createResource(PathUtils.getFirstFile(res));
+							log.debug("Attempting to use folder name as the file name for " + fmf.getTitle());
+							fmf.getFiles().clear();
+							fmf.addFile(PathUtils.getFirstFile(res).getParentFile());
+							
+							q = qf.createQueryFromFilename(fmf, hints);
+							mm = Phoenix.getInstance().getMetadataManager();
+							results = mm.search(q);
+							md = mm.getMetdata(results, q);
+						}
+					} else {
+						throw e;
 					}
 				}
 
@@ -217,9 +291,37 @@ public class PhoenixRenamer extends PhoenixStandalone {
 
 				rename(res, md);
 			} catch (Exception e) {
-				log.warn("Cannot rename " + res.getTitle() + " since there is no metadata");
+				log.warn("Cannot rename " + res.getTitle());
 				Logger.getRootLogger().warn("failed to rename " + res, e);
+				if (renameFailedCommand!=null) {
+					processRenameFailedCommand(res, e);
+				}
 			}
+		}
+	}
+
+	private void processRenameFailedCommand(IMediaFile res, Exception e) {
+		String path = res.getPath();
+		log.info("Executing Command '"+renameFailedCommand +" \""+ path +"\" \""+e.getMessage()+"\"'");
+		
+		List<String> cmd = new ArrayList<String>();
+		cmd.add(renameFailedCommand);
+		cmd.add(path);
+		cmd.add(e.getMessage());
+		if (postExecuteCommandArgs!=null) {
+			cmd.add(postExecuteCommandArgs);
+		}
+		ProcessBuilder pb = new ProcessBuilder(cmd);
+
+		pb.redirectErrorStream();
+		
+		try {
+			Process p = pb.start();
+			StreamGobbler gobble = new StreamGobbler(p.getInputStream());
+			gobble.start();
+			gobble.join();
+		} catch (Throwable t) {
+			log.error("Failed to start process: " + renameFailedCommand + "; " + t.getMessage());
 		}
 	}
 
@@ -337,17 +439,37 @@ public class PhoenixRenamer extends PhoenixStandalone {
 			String ext = FilenameUtils.getExtension(newName);
 			newName = name + " - Sample." + ext;
 		}
-		
-		File newFile = new File(file.getParentFile(), newName);
+
+        File parentFile = null;
+        if (MediaType.toMediaType(md.getMediaType()) == MediaType.TV) {
+            if (tvOutDir!=null) {
+                parentFile=tvOutDir;
+            }
+        } else if (MediaType.toMediaType(md.getMediaType()) == MediaType.MOVIE) {
+            if (movieOutDir!=null) {
+                parentFile=movieOutDir;
+            }
+        }
+
+        if (parentFile==null) {
+            parentFile=file.getParentFile();
+        }
+
+		File newFile = new File(parentFile, newName);
 		if (newFile.exists()) {
 			log.info(newName + " already exists.");
 		} else {
+			if (!newFile.getParentFile().exists()) {
+                if (!newFile.getParentFile().mkdirs()) {
+					throw new Exception("Unable to create directory " + newFile.getParentFile());
+				}
+			}
+
 			if (!file.renameTo(newFile)) {
-				log.warn("Rename failed for " + newName);
-				return;
+				throw new Exception("Failed to rename " + newName);
 			}
 			
-			log.debug("Renamed Sucessful for: " + newName);
+			log.info("Renamed " +origFile + " to " + newFile);
 			Logger.getRootLogger().info("Renamed " + origFile + " to " + newFile);
 		}
 		
@@ -422,8 +544,7 @@ public class PhoenixRenamer extends PhoenixStandalone {
 					}
 				}
 			} catch (Exception e) {
-				log.warn("Unable to rename directory for: " + file);
-				Logger.getRootLogger().warn("Unable to rename directory for: " + file, e);
+				throw e;
 			}
 		}
 		

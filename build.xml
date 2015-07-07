@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_runnable_jar" name="Build Phoenix Tools">
-	<property name="version" value="1.0.6" />
+	<property name="version" value="1.0.9" />
 	
 	<property name="launch4j.dir" location="/home/sls/apps/launch4j" />
 	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar
@@ -58,6 +58,7 @@
 	</target>
 	
 	<target name="package" depends="build-windows-launcher">
+		<delete dir="target/PhoenixTools"/>
 		<mkdir dir="target/PhoenixTools"/>
 		<copy file="launch/phoenix-renamer" todir="target/PhoenixTools"/>
 		<chmod perm="755" file="target/PhoenixTools/phoenix-renamer"/>
