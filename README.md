@@ -1,6 +1,11 @@
 # phoenix-renamer
 Command line media renaming tool for Movie and TV files
 
+# Dependencies
+* Java 7
+* Window/Linux/Mac
+* Internet Connection
+
 # Usage
 ```bash
 usage: phoenix-renamer [OPTIONS] directory|file
@@ -148,4 +153,18 @@ For a sucess script, you might use this information to move the file yourself to
 
 When the rename fails, failed.sh is called with 2 parameter.  The first is the filename and second is the message.
 
+# Advanced Uses
+Phoenix renamer can run, and watch a directory (and subdirectories) for changes, and then rename files as the appear.
+
+```
+$ phoenix-renamer --no-dirname-lookups --watchDir DIR_TO_WATCH  --watchSeconds 100
+```
+
+The above command will run and watch ```DIR_TO_WATCH``` for new files.  When a new file is added, it check the file every 100 seconds to make sure it is not being written to.  Once the file is stable (ie hasn't changed in 100 seconds), then it will try to rename it.
+
+no-dirname-lookups is required when watching, since ```--watchDir``` does not support renaming directories and we don't want our files being renamed based on the name of the directory that they reside.
+
+The above command would most likely be used with the ```--cmd-failed``` so that you can handle failures and perhaps send an email, or use pushbullet to send a notice to your phone, etc.
+
+```watchDir``` is NOT compatible with rename directories or rename artifacts.  ie, this should only be used if you expect that DIR_TO_WATCH will only contain single media files and not media file directories.
 
