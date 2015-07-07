@@ -45,3 +45,107 @@ usage: phoenix-renamer [OPTIONS] directory|file
                            file if no changes have happened to the file
                            within this amount of seconds
 ```
+
+# Examples
+## Rename a single media file
+```
+$ phoenix-renamer Terminator.mp4
+```
+Terminator.mp4 would be renamed to The Terminator (1980).mp4
+
+## Rename all files in directory
+```
+$ phoenix-renamer MediaDir/
+```
+Any media files, TV or Movies, that are found in MediaDir will be renamed.
+
+```
+$ phoenix-renamer --tvOutDir "/TV/" --movieOutDir "/Movies/" MediaDir/
+```
+Any media files that are found, will be renamed, and TV files will be renamed to the tvOutDir and the movie files will be renamed to the movieOutDir.  NOTE IF tvOutDir or movieOutDir is not on the same filesystem as the original file, the rename will fail.
+
+## Rename media directories
+```
+$ phoenix-renamer --renameDirectories --renameArtifacts MediaDir/
+```
+This assumes that in your MediaDir you have each movie in a separate folder.  For example
+```
+MediaDir/Terminator/Terminator.mp4
+```
+Once the rename is complete it will be
+```
+MediaDir/The Terminator (1980)/The Terminator (1980).mp4
+```
+renameArtifacts will rename any other files, such are subtitles, to match the media file renaming.
+
+## Run a command on success or failure
+```
+$ phoenix-renamer --cmd /full/path/to/success.sh --cmd-failed /full/path/to/failed.sh MediaDir/
+```
+For each file that is renamed, success.sh or failed.sh will be called, depending on if the rename was sucessful or not.
+
+In the case it is successful, the success.sh will get the new filename as the first argument.  Also the ENVIRONMENT for the script will contain all the metadata for the newly renamed file, with each variable prefixed by PHOENIX_
+
+The complete list of variables include.
+```bash
+PHOENIX_MEDIATITLE=The Terminator
+PHOENIX_EXTENDEDRATINGS=
+PHOENIX_STEREO=false
+PHOENIX_HDTV=false
+PHOENIX_PARENTALRATING=
+PHOENIX_SEASONFINAL=false
+PHOENIX_TOTALPARTS=0
+PHOENIX_EPISODENUMBER=0
+PHOENIX_SERIESINFOID=0
+PHOENIX_GENREID=
+PHOENIX_SEASONPREMIERE=false
+PHOENIX_DEFAULTBACKGROUND=
+PHOENIX_SCRAPEDBY=
+PHOENIX_SERIESPREMIERE=false
+PHOENIX_DISCNUMBER=0
+PHOENIX_WRITER=James Cameron;Gale Anne Hurd
+PHOENIX_TAGLINE=Your future is in his hands.
+PHOENIX_MEDIAURL=
+PHOENIX_EXTERNALID=
+PHOENIX_ORIGINALAIRDATE=467611200000
+PHOENIX_MEDIATYPE=Movie
+PHOENIX_QUOTES=
+PHOENIX_CHANNELPREMIERE=false
+PHOENIX_FANART=0|BACKGROUND|http://image.tmdb.org/t/p/original/qafr2jiIqIcYQYq6pkWtaYlek5X.jpg;0|POSTER|http://image.tmdb.org/t/p/original/w9DzDW44CISoLJyaQICSOoSsIEN.jpg;0|POSTER|http://image.tmdb.org/t/p/original/3gYbsq8JK7twS4rAZhgCeOfyCzG.jpg;0|POSTER|http://image.tmdb.org/t/p/original/q7edM7f6b0cKMtE7pRxqEohdLif.jpg;0|POSTER|http://image.tmdb.org/t/p/original/q8ffBuxQlYOHrvPniLgCbmKK4Lv.jpg;0|POSTER|http://image.tmdb.org/t/p/original/wj9PcqCXJt5mxG2w9G8lwmvecWA.jpg;0|BACKGROUND|http://image.tmdb.org/t/p/original/6yFoLNQgFdVbA8TZMdfgVpszOla.jpg;0|BACKGROUND|http://image.tmdb.org/t/p/original/1i9ySmVWvIRZKCIQCxkz2807Y0.jpg;0|BACKGROUND|http://image.tmdb.org/t/p/original/97OEzl2I8fNmKoU2fkujZij3dBO.jpg;0|BACKGROUND|http://image.tmdb.org/t/p/original/mXVv4Chm01Ph3FydCD77YWClKhS.jpg
+PHOENIX_PREMIERE=false
+PHOENIX_CC=false
+PHOENIX_SEASONNUMBER=0
+PHOENIX_DESCRIPTION=In the post-apocalyptic future, reigning tyrannical supercomputers teleport a cyborg assassin known as the "Terminator" back to 1984 to kill Sarah Connor, whose unborn son is destined to lead insurgents against 21st century mechanical hegemony. Meanwhile, the human-resistance movement dispatches a lone warrior to safeguard Sarah. Can he stop the virtually indestructible killing machine?
+PHOENIX_RATED=R
+PHOENIX_ALBUM=
+PHOENIX_GENRE=Action/Thriller/Science Fiction
+PHOENIX_DIRECTOR=James Cameron
+PHOENIX_DEFAULTBANNER=
+PHOENIX_DEFAULTPOSTER=
+PHOENIX_MEDIAPROVIDERID=tmdb
+PHOENIX_SCRAPEDDATE=
+PHOENIX_SUBTITLED=false
+PHOENIX_ACTOR=Arnold Schwarzenegger -- The Terminator;Michael Biehn -- Kyle Reese;Linda Hamilton -- Sarah Connor;Paul Winfield -- Lieutenant Ed Traxler;Lance Henriksen -- Detective Vukovich;Bess Motta -- Ginger Ventura;Earl Boen -- Dr. Peter Silberman;Rick Rossovich -- Matt Buchanan;Bill Paxton -- Punk Leader;Brian Thompson -- Punk;Franco Columbu -- Future Terminator;Dick Miller -- Pawnshop Clerk;Joe Farago -- TV Anchorman
+PHOENIX_MISC=
+PHOENIX_PARTNUMBER=0
+PHOENIX_PRODUCER=Gale Anne Hurd
+PHOENIX_MEDIAPROVIDERDATAID=218
+PHOENIX_RUNNINGTIME=6480000
+PHOENIX_EPISODENAME=The Terminator
+PHOENIX_EPISODE=0
+PHOENIX_SEASON=0
+PHOENIX_USERRATING=69
+PHOENIX_YEAR=1984
+PHOENIX_SERIESFINALE=false
+PHOENIX_SAP=false
+PHOENIX_TRAILERURL=http://www.youtube.com/watch?v=CEpuUhM26k8
+PHOENIX_TRIVIA=
+PHOENIX_LANGUAGE=
+PHOENIX_TITLE=
+PHOENIX_IMDBID=tt0088247
+```
+For a sucess script, you might use this information to move the file yourself to another location using information that is in the metadata.  Or, you might choose write another metadata file for the renamed mediafile.
+
+When the rename fails, failed.sh is called with 2 parameter.  The first is the filename and second is the message.
+
+
