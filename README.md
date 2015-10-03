@@ -1,6 +1,8 @@
 # phoenix-renamer
 Command line media renaming tool for Movie and TV files
 
+[ ![Download](https://api.bintray.com/packages/stuckless/sagetvphoenix/phoenix-renamer/images/download.svg) ](https://bintray.com/stuckless/sagetvphoenix/phoenix-renamer/_latestVersion)
+
 # Dependencies
 * Java 7
 * Window/Linux/Mac
