@@ -454,19 +454,22 @@ public class PhoenixRenamer extends PhoenixStandalone {
         if (parentFile==null) {
             parentFile=file.getParentFile();
         }
+        if (parentFile==null) {
+        	parentFile = new File("."); 
+        }
 
 		File newFile = new File(parentFile, newName);
 		if (newFile.exists()) {
 			log.info(newName + " already exists.");
 		} else {
-			if (!newFile.getParentFile().exists()) {
+			if (newFile.getParentFile()!=null && !newFile.getParentFile().exists()) {
                 if (!newFile.getParentFile().mkdirs()) {
 					throw new Exception("Unable to create directory " + newFile.getParentFile());
 				}
 			}
 
 			if (!file.renameTo(newFile)) {
-				throw new Exception("Failed to rename " + newName);
+				throw new Exception("Failed to rename " + file + " to " + newFile);
 			}
 			
 			log.info("Renamed " +origFile + " to " + newFile);
