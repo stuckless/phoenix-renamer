@@ -20,7 +20,8 @@ public class TestRenamer {
 
 	@Before
 	public void setUp() throws Exception {
-		System.setProperty("phoenix/standaloneHomeDir", "target/junit");
+		new File("build/test/junit").mkdirs();
+		System.setProperty("phoenix/standaloneHomeDir", "build/test/junit");
 	}
 
 	@After
@@ -36,7 +37,7 @@ public class TestRenamer {
 
 	@Test
 	public void testWithOutRenameDirectories() throws IOException {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Revenge S01E02 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E02.Trust.720p.WEB-DL.DD5.1.H.264-TB.mkv");
@@ -68,7 +69,7 @@ public class TestRenamer {
 	
 	@Test
 	public void testWithRenameDirectories() throws IOException {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Revenge S01E02 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E02.Trust.720p.WEB-DL.DD5.1.H.264-TB.mkv");
@@ -100,7 +101,7 @@ public class TestRenamer {
 	
 	@Test
 	public void testWithRenameDirectoriesWithMultipleNoVideoFiles() throws IOException {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Revenge S01E02 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E02.Trust.720p.WEB-DL.DD5.1.H.264-TB.mkv");
@@ -128,7 +129,7 @@ public class TestRenamer {
 
 	@Test
 	public void testWithRenameSamples() throws IOException {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Salt/Salt.mkv");
@@ -155,7 +156,7 @@ public class TestRenamer {
 	
 	@Test
 	public void testWithFolderLookup() throws Exception {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Footloose 2011 1080p BluRay x264 RRH/rrh-footloose.mkv");
@@ -166,7 +167,7 @@ public class TestRenamer {
 	
 	@Test
 	public void testOddFiles() throws Exception {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "J Edgar 2011 MULTi 1080p BluRay x264 LOST/J Edgar 2011 MULTi 1080p BluRay x264 LOST.mkv");
@@ -178,7 +179,7 @@ public class TestRenamer {
 	@Test
 	public void testRenameDirectoryWhenFileIsAlreadyRenamed() throws Exception {
 		// reported by mkanet
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "The Rum Diary 2011 1080p BluRay x264 EbP/The Rum Diary (2011).mkv");
@@ -190,7 +191,7 @@ public class TestRenamer {
 	@Test
 	public void testRenameTVWithAndInsteadOfAmperstand() throws Exception {
 		// reported by ken birch
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Mike Molly/Mike.And.Molly.S02E15.avi");
@@ -202,7 +203,7 @@ public class TestRenamer {
 	@Test
 	public void testRenameTVWithDifferentMask() throws Exception {
 		// reported by ken birch
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Mike Molly/Mike.And.Molly.S02E15.avi");
@@ -213,7 +214,7 @@ public class TestRenamer {
 
 	@Test
 	public void testRenameMoviesWithDifferentMask() throws Exception {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "J Edgar 2011 MULTi 1080p BluRay x264 LOST/J Edgar 2011 MULTi 1080p BluRay x264 LOST.mkv");
@@ -224,7 +225,7 @@ public class TestRenamer {
 
 	@Test
 	public void testWithSameNamedFolder() throws Exception {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "J. Edgar/J Edgar 2011 MULTi 1080p BluRay x264 LOST.mkv");
@@ -244,7 +245,7 @@ public class TestRenamer {
 
 	@Test
 	public void testHugo() throws Exception {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 		
 		File f1 = makeFile(downloads, "Hugo/Hugo.mkv");
@@ -255,7 +256,7 @@ public class TestRenamer {
 
 	@Test
 	public void testRenameMaskWithDir() throws Exception {
-		File downloads = new File("target/junit/downloads");
+		File downloads = new File("build/test/junit/downloads");
 		FileUtils.deleteDirectory(downloads);
 
 		File f1 = makeFile(downloads, "Hugo.mkv");
@@ -266,7 +267,7 @@ public class TestRenamer {
 
     @Test
     public void testRenameWithDifferentOutDir() throws Exception {
-        File downloads = new File("target/junit/downloads");
+        File downloads = new File("build/test/junit/downloads");
         FileUtils.deleteDirectory(downloads);
 
         File f1 = makeFile(downloads, "Hugo.mkv");

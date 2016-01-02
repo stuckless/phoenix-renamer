@@ -9,6 +9,8 @@ classes/
 .idea/
 .settings/
 
+phoenix-renamer.iml
+
 # Compiled source #
 ###################
 *.com

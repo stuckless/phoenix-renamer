@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_runnable_jar" name="Build Phoenix Tools">
-	<property name="version" value="1.0.10" />
-	
+	<property name="version" value="1.0.11" />
+	<property name="deploy.dir" value="build/dist" />
 	<property name="launch4j.dir" location="/home/sls/apps/launch4j" />
+
 	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar
 		        :${launch4j.dir}/lib/xstream.jar" />
 
 	<target name="init">
-		<delete dir="target" failonerror="false"/>
-		<mkdir dir="target"/>
+		<delete dir="${deploy.dir}" failonerror="false"/>
+		<mkdir dir="${deploy.dir}"/>
 	</target>
 
 	<target name="create_runnable_jar">
-		<mkdir dir="target"/>
-		<delete file="target/phoenix-tools.jar" failonerror="false"/>
-		<jar destfile="target/phoenix-tools.jar">
+		<mkdir dir="${deploy.dir}"/>
+		<delete file="${deploy.dir}/phoenix-tools.jar" failonerror="false"/>
+		<jar destfile="${deploy.dir}/phoenix-tools.jar">
 			<manifest>
 				<attribute name="Main-Class" value="sagex.phoenix.standalone.JarRunner"/>
 				<attribute name="Rsrc-Main-Class" value="sagex.phoenix.standalone.Unconfigured"/>
@@ -22,7 +23,8 @@
 				<attribute name="Rsrc-Class-Path" value="./ commons-codec-1.3.jar commons-dbutils-1.3.jar commons-io-1.4.jar commons-lang-2.4.jar dom4j-1.6.1.jar easymock-2.5.2.jar gson-1.7.1.jar htmlparser-1.6.jar junit-4.7.jar log4j-1.2.15.jar lucene-core-3.0.1.jar phoenix.jar sagex-api.jar servlet-api-2.5.jar commons-cli-1.2.jar jsoup-1.7.1.jar api-common-1.0.jar themoviedb-3.0.1.jar commons-lang3-3.0.jar nielm_sageimdb.jar nielm_sageutls.jar jackson-annotations-2.1.4.jar jackson-core-2.1.4.jar jackson-databind-2.1.4.jar slf4j-api-1.6.0.jar"/>
 			</manifest>
 			<zipfileset src="lib/jar-in-jar-loader.jar"/>
-			<fileset dir="bin"/>
+			<fileset dir="build/classes/main"/>
+            <fileset dir="build/resources/main"/>
 			<zipfileset dir="lib" includes="commons-codec-1.3.jar"/>
 			<!--<zipfileset dir="lib" includes="commons-dbutils-1.3.jar"/>-->
 			<zipfileset dir="lib" includes="commons-io-1.4.jar"/>
@@ -58,14 +60,14 @@
 	</target>
 	
 	<target name="package" depends="build-windows-launcher">
-		<delete dir="target/PhoenixTools"/>
-		<mkdir dir="target/PhoenixTools"/>
-		<copy file="launch/phoenix-renamer" todir="target/PhoenixTools"/>
-		<chmod perm="755" file="target/PhoenixTools/phoenix-renamer"/>
-		<copy file="target/phoenix-renamer.exe" todir="target/PhoenixTools"/>
-		<copy file="target/phoenix-tools.jar" todir="target/PhoenixTools"/>
-		<zip destfile="target/PhoenixTools-${version}.zip">
-			<zipfileset dir="target/PhoenixTools/" prefix="PhoenixTools"/>
+		<delete dir="${deploy.dir}/PhoenixTools"/>
+		<mkdir dir="${deploy.dir}/PhoenixTools"/>
+		<copy file="launch/phoenix-renamer" todir="${deploy.dir}/PhoenixTools"/>
+		<chmod perm="755" file="${deploy.dir}/PhoenixTools/phoenix-renamer"/>
+		<copy file="${deploy.dir}/phoenix-renamer.exe" todir="${deploy.dir}/PhoenixTools"/>
+		<copy file="${deploy.dir}/phoenix-tools.jar" todir="${deploy.dir}/PhoenixTools"/>
+		<zip destfile="${deploy.dir}/PhoenixTools-${version}.zip">
+			<zipfileset dir="${deploy.dir}/PhoenixTools/" prefix="PhoenixTools"/>
 		</zip>
 	</target>
 </project>

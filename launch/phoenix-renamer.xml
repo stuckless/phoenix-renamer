@@ -2,7 +2,7 @@
   <dontWrapJar>true</dontWrapJar>
   <headerType>console</headerType>
   <jar>phoenix-tools.jar</jar>
-  <outfile>../target/phoenix-renamer.exe</outfile>
+  <outfile>../build/dist/phoenix-renamer.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
