@@ -520,6 +520,9 @@ public class PhoenixRenamer extends PhoenixStandalone {
 				if (!parent.getName().equals(newParentName)) {
 					File dest = new File(parent.getParentFile(), newParentName);
 					if (dest.exists()) {
+						// reposition our reference to "file"
+						newFile = new File(dest, newFile.getName());
+
 						Logger.getRootLogger().info("Have to move the directory contents, since the directory we are renaming to already exists");
 						// move all children to the new directory
 						for (File f : parent.listFiles()) {
@@ -538,6 +541,9 @@ public class PhoenixRenamer extends PhoenixStandalone {
 						}
 					} else {
 						if (parent.renameTo(dest)) {
+							// reposition our reference to "file"
+							newFile = new File(dest, newFile.getName());
+
 							log.info("Renamed parent's directory to " + newParentName);
 							Logger.getRootLogger().info("Renamed parent's directory to " + newParentName);
 						} else {
