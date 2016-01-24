@@ -6,13 +6,12 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-version '1.0.11'
-
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 ext {
-    name = 'phoenix-renamer'
+    appName = 'phoenix-renamer'
+    baseVersion = '1.0.11'
 }
 
 repositories {
@@ -39,8 +38,8 @@ dependencies {
 jar {
     manifest {
         attributes(
-                "Implementation-Title": "${name}",
-                "Implementation-Version": version
+                "Implementation-Title": "${appName}",
+                "Implementation-Version": baseVersion
         )
     }
 }
@@ -89,35 +88,35 @@ bintray {
     key = System.getenv("BINTRAY_API");
 
     filesSpec {
-        from ('build/distributions/') {
-            include "*${version}*"
+        from ('build/dist/') {
+            include "*${baseVersion}*"
         }
-        into "${name}"
+        into "${appName}/${baseVersion}"
     }
 
     dryRun = false //Whether to run this as dry-run, without deploying
     publish = true //If version should be auto published after an upload
     pkg {
-        repo = 'sagetv-plugins'
-        name = "${name}"
-        userOrg = 'opensagetv'
-        desc = "Commandline Media Renaming Tool"
+        repo = 'sagetvphoenix'
+        name = "${appName}"
+        //userOrg = 'opensagetv'
+        desc = "Commandline Media Renaming Tool for TV and Music"
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/stuckless/sagetv-phoenix-core'
-        labels = ['sagetv', 'sagetv-plugin']
+        vcsUrl = 'https://github.com/stuckless/phoenix-renamer'
+        labels = ['sagetv']
         publicDownloadNumbers = true
         //attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
         version {
-            name = "${version}"
+            name = "${baseVersion}"
             desc = "Commandline Media Renaming Tool"
-            vcsTag = "${version}"
+            vcsTag = "${baseVersion}"
             //attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }
 }
 
 task packageAll << {
-    ant.properties.version = version;
+    ant.properties.version = baseVersion;
     ant.ant (
             antfile: "buildjar.xml",
             target: "package"
