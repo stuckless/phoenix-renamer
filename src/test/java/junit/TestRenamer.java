@@ -43,7 +43,7 @@ public class TestRenamer {
 		File f1 = makeFile(downloads, "Revenge S01E02 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E02.Trust.720p.WEB-DL.DD5.1.H.264-TB.mkv");
 		File f2 = makeFile(downloads, "Paranormal Activity 3 2011 UNRATED BluRay 1080p DTS x264 CHD/paranormal.activity.3.2011.bluray.1080p.dts.x264-chd.mkv");
 		File f3 = makeFile(downloads, "Revenge S01E03 720p WEB DL DD5 1 H 264 TrollololBlue/Revenge.S01E03.Trust.720p.WEB-DL.DD5.1.H.264-TB.mkv");
-		File f4 = makeFile(downloads, "Salt/Salt/BDMV/file.m2ts");
+		File f4 = makeFile(downloads, "Salt/Salt (2010)/BDMV/file.m2ts");
 		File f5 = makeFile(downloads, "Pulp Fiction/Pulp Fiction/VIDEO_TS/file.vob");
 		File f6 = makeFile(downloads, "Valentines Day/Valentine's Day cd1.mkv");
 		File f7 = makeFile(downloads, "Valentines Day/Valentine's Day cd2.mkv");

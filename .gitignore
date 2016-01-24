@@ -8,6 +8,11 @@ libs/
 classes/
 .idea/
 .settings/
+build/
+.gradle/
+lib/*.zip
+*~
+
 
 phoenix-renamer.iml
 
@@ -31,7 +36,7 @@ phoenix-renamer.iml
 *.jar
 *.rar
 *.tar
-*.zip
+
 
 # Logs and databases #
 ######################

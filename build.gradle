@@ -115,3 +115,12 @@ bintray {
         }
     }
 }
+
+task packageAll << {
+    ant.properties.version = version;
+    ant.ant (
+            antfile: "buildjar.xml",
+            target: "package"
+    )
+}
+packageAll.dependsOn jar
